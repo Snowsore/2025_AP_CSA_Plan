@@ -16,9 +16,9 @@ export default async function Home() {
   const questionFolders = await getQuestionFolders();
 
   return (
-    <div className="font-sans items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <h1 className="text-4xl font-bold">MCQ Tester</h1>
-      <div className="flex flex-col gap-4">
+    <div className="font-sans items-center justify-items-center min-h-screen p-8 pb-20 gap-16">
+      <h1 className="text-4xl font-bold pb-2">MCQ Tester</h1>
+      <div className="flex flex-col">
         {questionFolders.map((folder) => (
           <Link key={folder} href={`/questions/${folder}`}>
             {folder}
