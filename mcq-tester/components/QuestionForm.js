@@ -1,62 +1,57 @@
 "use client";
-import Image from "next/image";
 
-import { useEffect } from "react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { CookieStorage } from "@/utils/CookieStorage";
 
 export default function QuestionList({ unit, list, answers }) {
+  const [userAnswers, setUserAnswers] = useState({});
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    const userAnswers = {};
-    formData.forEach((value, key) => {
-      userAnswers[key] = value;
-    });
-
-    Object.keys(userAnswers).forEach((key, index) => {
-      document.querySelectorAll("label").forEach((label) => {
-        label.style.backgroundColor = "";
-      });
-
-      setTimeout(() => {
-        const input = document.querySelector(
-          `input[name="${key}"][value="${userAnswers[key]}"]`
-        );
-        const label = input.closest("label");
-        if (label) {
-          const questionIndex = parseInt(key.split(" ").at(-1), 10) - 1;
-          if (userAnswers[key] !== answers[questionIndex]) {
-            label.style.backgroundColor = "#34d399";
-          } else {
-            label.style.backgroundColor = "#f87171";
-          }
-        }
-      }, 0);
-    });
   };
 
   const handleChange = (event) => {
     const formData = new FormData(event.target.form);
-    const answers = {};
+    const formAnswers = {};
     formData.forEach((value, key) => {
-      answers[key] = value;
+      formAnswers[key] = value;
     });
-    localStorage.setItem(`questionAnswers_${unit}`, JSON.stringify(answers));
+    setUserAnswers(formAnswers);
+    CookieStorage.setJson(`questionAnswers_${unit}`, formAnswers);
   };
 
   useEffect(() => {
-    const savedAnswers = localStorage.getItem(`questionAnswers_${unit}`);
+    const savedAnswers = CookieStorage.getJson(`questionAnswers_${unit}`);
     if (savedAnswers) {
-      const answers = JSON.parse(savedAnswers);
-      for (const [key, value] of Object.entries(answers)) {
-        const input = document.querySelector(
-          `input[name="${key}"][value="${value}"]`
-        );
-        if (input) {
-          input.checked = true;
-        }
-      }
+      setUserAnswers(savedAnswers);
     }
   }, []);
+
+  useEffect(() => {
+    document
+      .querySelectorAll(`label[style*="background"]:has(input:not(:checked))`)
+      .forEach((label) => {
+        label.style.backgroundColor = "";
+      });
+
+    Object.keys(userAnswers).forEach((key) => {
+      const input = document.querySelector(
+        `input[name="${key}"][value="${userAnswers[key]}"]`
+      );
+
+      input.checked = true;
+      const label = input.closest("label");
+
+      const questionIndex = parseInt(key.split(" ").at(-1), 10) - 1;
+
+      if (userAnswers[key] !== answers[questionIndex]) {
+        label.style.backgroundColor = "#f87171";
+      } else {
+        label.style.backgroundColor = "#34d399";
+      }
+    });
+  }, [userAnswers]);
 
   return (
     <form onSubmit={handleSubmit} onChange={handleChange}>
@@ -88,15 +83,6 @@ export default function QuestionList({ unit, list, answers }) {
           </div>
         </div>
       ))}
-
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
-        >
-          Submit Answers
-        </button>
-      </div>
     </form>
   );
 }

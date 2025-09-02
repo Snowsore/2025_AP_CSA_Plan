@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import Image from "next/image";
 import QuestionForm from "@/components/QuestionForm";
 
 async function getQuestions(id) {

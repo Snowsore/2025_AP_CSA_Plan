@@ -1,9 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  filter: invert(1);
+  --background: #171717;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -17,4 +16,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+img {
+  filter: invert(1) !important;
 }
